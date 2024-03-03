@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Formulario de Información Personal</title>
+</head>
+<body>
+
+    
+    <div class="container">
+        
+        <h1>Información Personal</h1>
+       
+       <form action="#" method="post" onsubmit="guardarInformacion(event)">
+
+        <!-- Campo de texto para el nombre -->
+        <label for="nombre">Nombre</label>
+        <input type="text" id="nombre" name="nombre" required>
+        
+        <br>
+        
+        <!-- Campo de selección para el género -->
+        <label for="genero">Género</label>
+        <select id="genero" name="genero">
+            <option value="masculino">Masculino</option>
+            <option value="femenino">Femenino</option>
+            <option value="otro">Otro</option>
+        </select>
+        
+        <br>
+        
+        <!-- Campo de fecha de nacimiento -->
+        <label for="fechaNacimiento">Fecha de Nacimiento</label>
+        <input type="date" id="fechaNacimiento" name="fechaNacimiento" required>
+        
+        <br>
+        
+        <!-- Campo de texto para la dirección -->
+        <label for="direccion">Dirección</label> <br>
+        <textarea id="direccion" name="direccion" rows="4" required></textarea>
+        
+        <br>
+        
+        <!-- Botón de envío del formulario -->
+        <button type="submit">Enviar</button> <br>
+        
+    </form>
+    
+
+    <!-- Botón para eliminar toda la información almacenada -->
+    <button onclick="eliminarTodaInformacion()">Eliminar Toda la Información</button>
+    
+    <!-- Mostrar la información almacenada -->
+    <div id="informacionGuardada"></div>
+</div>
+
+
+<script>
+    // Obtener el arreglo de objetos almacenado en localStorage o crear uno nuevo si no existe
+    var informacionUsuarios = JSON.parse(localStorage.getItem('informacionUsuarios')) || [];
+    
+    function guardarInformacion(event) {
+            event.preventDefault();
+            
+            // Crear un nuevo objeto con la información del usuario
+            var nuevoUsuario = {
+                nombre: document.getElementById('nombre').value,
+                genero: document.getElementById('genero').value,
+                fechaNacimiento: document.getElementById('fechaNacimiento').value,
+                direccion: document.getElementById('direccion').value
+            };
+            
+            // Agregar el nuevo usuario al arreglo de objetos
+            informacionUsuarios.push(nuevoUsuario);
+            
+            // Almacenar el arreglo en localStorage
+            localStorage.setItem('informacionUsuarios', JSON.stringify(informacionUsuarios)); //Convierte en una cadena JSONny se almacena en localStore
+            
+            // Mostrar la información actualizada
+            mostrarInformacion();
+            
+        }
+
+        // Función para mostrar la información almacenada
+        function mostrarInformacion() {
+        var informacionGuardadaDiv = document.getElementById('informacionGuardada');
+        informacionGuardadaDiv.innerHTML = '';
+
+        if (informacionUsuarios.length === 0) { //Es igual a cero para que si la lista no contiene informacion aparece un mensaje
+          informacionGuardadaDiv.innerHTML = '<p>No hay información almacenada.</p>';
+          informacionGuardadaDiv.style.color = "red";
+          informacionGuardadaDiv.style.letterSpacing = "0.2rem";
+          informacionGuardadaDiv.style.fontWeight = "900";
+        } else { //De lo contrario creamos el elemento 
+         var lista = document.createElement('ul');
+         informacionUsuarios.forEach(function(usuario, index) {
+            var listItem = document.createElement('li');
+            listItem.innerHTML = `<strong>${usuario.nombre}</strong> (${usuario.genero}), Nacido el ${usuario.fechaNacimiento}. Dirección: ${usuario.direccion} <button onclick="eliminarInformacion(${index})">Eliminar</button>`;
+            listItem.style.color = "black";
+            listItem.style.listStyleType = "none";
+            listItem.style.letterSpacing = "0.2rem";
+            listItem.style.fontWeight = "bold";
+            listItem.style.margin = "0.8rem 0rem";
+            lista.appendChild(listItem);
+        });
+         informacionGuardadaDiv.appendChild(lista); //Lo agregamos en el html 
+
+        // Restablecer los valores del formulario después de cargar la información
+        document.getElementById('nombre').value = '';
+        document.getElementById('genero').value = ''; 
+        document.getElementById('fechaNacimiento').value = '';
+        document.getElementById('direccion').value = '';
+      }
+    }
+
+        // Función para eliminar toda la información almacenada
+        function eliminarTodaInformacion() {
+            localStorage.removeItem('informacionUsuarios'); // Elimina el arreglo de objetos almacenado
+            informacionUsuarios = []; //Asegura que el arreglo este vacio
+            mostrarInformacion(); //LLama a la funcion, si es vacio muestra el mensaje y si no crea la lista con la informacio
+        }
+
+        // Función para eliminar información específica del usuario
+        function eliminarInformacion(index) {
+            informacionUsuarios.splice(index, 1);
+            localStorage.setItem('informacionUsuarios', JSON.stringify(informacionUsuarios));
+            mostrarInformacion();
+        }
+
+        // Mostrar información al cargar la página
+        mostrarInformacion();
+
+    </script>
+
+</body>
+</html>
